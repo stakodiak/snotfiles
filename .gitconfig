@@ -1,0 +1,7 @@
+[user]
+	name = Alex Stachowiak
+	email = alexander@computer.org
+[color]
+	ui = auto
+[core]
+	editor = /usr/bin/vim
