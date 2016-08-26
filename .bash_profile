@@ -1,10 +1,7 @@
-# Tell grep to highlight matches
-export GREP_OPTIONS="--color=auto"
-alias ll="ls -l"
-alias j="jump"
+# Force grep to highlight matches.
+export GREP_OPTIONS="--color=always"
 
 # Setting PATH for Python 3.3
-# The orginal version is saved in .bash_profile.pysave
 PATH="/usr/local/bin:/Library/Frameworks/Python.framework/Versions/3.3/bin:${PATH}"
 export PATH
 export PATH="$PATH:/usr/local/mysql/bin"
@@ -12,6 +9,7 @@ export PATH="$PATH:/usr/local/bin"
 
 # Keep log of all vi commands.
 alias vi='vim -w ~/.vimlog '
+alias pvi='/usr/local/bin/vim -c "set viminfo="'
 
 # Keep track of bash history forever.
 shopt -s histappend
@@ -35,19 +33,22 @@ alias gg="git grep"
 alias ga="git add"
 alias gb='git checkout $(git branch | fzf)'
 
+# clean up this garbage command
+alias ll="ls -l"
+
 # pugs utilities
 export PATH=/usr/local/pugs:$PATH
 
+# shortcut for finding files by prefix
 ff () {
     find . -name "$1*"
 }
 
-# Enable 256-bit colors in iTerm.
-export TERM='xterm-256color'
-
-# fd - cd to selected directory
-# from: https://github.com/junegunn/fzf/wiki/examples
+# find repo file with fuzzy search, then edit it
 alias f='vi $(git ls-files | fzf)'
+
+# `fd` - cd to selected directory
+# from: https://github.com/junegunn/fzf/wiki/examples
 fd() {
   local dir
   dir=$(find ${1:-*} -path '*/\.*' -prune \
@@ -56,6 +57,7 @@ fd() {
 }
 
 # Add directory marks.
+alias j="jump"
 export MARKPATH=$HOME/.marks
 function jump {
   cd -P "$MARKPATH/$1" 2>/dev/null || echo "No such mark: $1"
@@ -75,9 +77,9 @@ _completemarks() {
   COMPREPLY=($(compgen -W '${wordlist[@]}' -- "$curw"))
   return 0
 }
-
 complete -F _completemarks jump unmark
 
+# Add tab complete for Invoke commands.
 _complete_invoke() {
     local candidates
 
