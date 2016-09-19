@@ -1,4 +1,5 @@
-# Force grep to highlight matches.
+# Tell grep to highlight matches
+export CLICOLOR=1
 export GREP_OPTIONS="--color=always"
 
 # Setting PATH for Python 3.3
@@ -107,3 +108,7 @@ _complete_invoke() {
 # * -o default: when function generates no results, use filenames.
 # * positional args: program names to complete for.
 complete -F _complete_invoke -o default invoke inv
+
+# Use emacs bindings to jump to beginning or end of line.
+bind '\C-a:beginning-of-line'
+bind '\C-e:end-of-line' Force grep to highlight matches.
