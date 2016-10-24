@@ -13,3 +13,7 @@ set clipboard=unnamedplus,unnamed,exclude:cons\|linux
 
 " set tab spacing for HTML
 map \h :set softtabstop=2<CR>:set shiftwidth=2<CR>
+
+" SCSS
+" Recognize dashes as valid identifier characters
+autocmd vimrc FileType scss setlocal iskeyword+=-
