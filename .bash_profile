@@ -1,5 +1,12 @@
+# check if any aliases exist
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
+# keep the prompt clean
 export PS1="\W $ "
-# Tell grep to highlight matches
+
+# color grep output
 export CLICOLOR=1
 export GREP_OPTIONS="--color=always"
 
@@ -9,21 +16,23 @@ export PATH
 export PATH="$PATH:/usr/local/mysql/bin"
 export PATH="$PATH:/usr/local/bin"
 
-# Keep log of all vi commands.
+# log all vi keystrokes
 alias vi='vim -w ~/.vimlog '
+
+# for being sneaky
 alias pvi='/usr/local/bin/vim -c "set viminfo="'
 
-# Keep track of bash history forever.
+# track bash history forever
 shopt -s histappend
 export PROMPT_COMMAND="history -a"
 export HISTFILESIZE=
 export HISTSIZE=
 export HISTTIMEFORMAT="[%F %T] "
 
-# Change the file location because certain bash sessions truncate .bash_history file upon close.
+# Change the file location because certain bash sessions truncate
+# .bash_history file upon close.
 # http://superuser.com/questions/575479/bash-history-truncated-to-500-lines-on-each-login
 export HISTFILE=~/.bash_eternal_history
-echo "`date`" "(`tty`)"
 
 # Git shortcuts.
 alias gs="git status"
@@ -113,3 +122,6 @@ complete -F _complete_invoke -o default invoke inv
 # Use emacs bindings to jump to beginning or end of line.
 bind '\C-a:beginning-of-line'
 bind '\C-e:end-of-line'
+
+# print the date so you can orient yourself
+echo "`date`" "(`tty`)"
