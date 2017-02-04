@@ -11,8 +11,12 @@ set mouse=a
 set incsearch
 set clipboard=unnamedplus,unnamed,exclude:cons\|linux
 
-" change column width
+" shortcut for quickly changing words
+map <space> ciw
+
+" shortcut for column width
 map \t :set tw=
+
 " set tab spacing for HTML
 map \h :set softtabstop=2<CR>:set shiftwidth=2<CR>
 
