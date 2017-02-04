@@ -15,6 +15,7 @@ PATH="/usr/local/bin:/Library/Frameworks/Python.framework/Versions/3.3/bin:${PAT
 export PATH
 export PATH="$PATH:/usr/local/mysql/bin"
 export PATH="$PATH:/usr/local/bin"
+export PATH="$PATH:~/.npm-packages/bin"
 
 # log all vi keystrokes
 alias vi='vim -w ~/.vimlog '
