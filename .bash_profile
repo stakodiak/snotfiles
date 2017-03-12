@@ -3,11 +3,15 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
+# print dir when moving there
+cd() { builtin cd "$@" && ls -lG; }
+
 # keep the prompt clean
 export PS1="\W $ "
 
-# color grep output
+# color terminal output
 export CLICOLOR=1
+export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
 export GREP_OPTIONS="--color=always"
 
 # Setting PATH for Python 3.3
