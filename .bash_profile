@@ -4,7 +4,7 @@ if [ -f ~/.bash_aliases ]; then
 fi
 
 # print dir when moving there
-cd() { builtin cd "$@" && ls -lG; }
+cd() { builtin cd "$@" && ls -ltrG; }
 
 # keep the prompt clean
 export PS1="\W $ "
