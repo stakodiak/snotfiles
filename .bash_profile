@@ -130,3 +130,9 @@ bind '\C-e:end-of-line'
 
 # print the date so you can orient yourself
 echo "`date`" "(`tty`)"
+
+# relax with a weather report
+arkansas() {
+    curl "https://forecast.weather.gov/product.php?site=LZK&issuedby=LZK&product=RWS&format=CI&version=1&glossary=0" 2>>/dev/null | selector pre | re '\n' ' ' | re '.*2018' | re '  ' '\n\n' | re '((.){62} )' '\1\n' | trim
+}
+
