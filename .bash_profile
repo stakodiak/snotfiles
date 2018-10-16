@@ -20,7 +20,8 @@ export PATH
 export PATH="$PATH:/usr/local/mysql/bin"
 export PATH="$PATH:/usr/local/bin"
 export PATH="$PATH:~/.npm-packages/bin"
-
+export PATH="$PATH:/Users/alexander/Library/Python/2.7/bin"
+export PATH="$PATH:/Users/alexander/Library/Python/3.6/bin"
 # log all vi keystrokes
 alias vi='vim -w ~/.vimlog '
 
@@ -74,6 +75,7 @@ fd() {
 
 # Add directory marks.
 alias j="jump"
+alias m="mark"
 export MARKPATH=$HOME/.marks
 function jump {
   cd -P "$MARKPATH/$1" 2>/dev/null || echo "No such mark: $1"
@@ -131,8 +133,13 @@ bind '\C-e:end-of-line'
 # print the date so you can orient yourself
 echo "`date`" "(`tty`)"
 
+# enable iTerm shell integration
+test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+
+# for editing daily notes
+alias today="pvi ~/tmp/brandonblogger/`date +'%m-%d'`.txt"
+
 # relax with a weather report
 arkansas() {
     curl "https://forecast.weather.gov/product.php?site=LZK&issuedby=LZK&product=RWS&format=CI&version=1&glossary=0" 2>>/dev/null | selector pre | re '\n' ' ' | re '.*2018' | re '  ' '\n\n' | re '((.){62} )' '\1\n' | trim
 }
-
