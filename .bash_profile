@@ -6,6 +6,7 @@ fi
 # print dir when moving there
 cd() { builtin cd "$@" && ls -lthrG; }
 
+set -o vi
 # keep the prompt clean
 export PS1="\W $ "
 
