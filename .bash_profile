@@ -137,10 +137,31 @@ echo "`date`" "(`tty`)"
 # enable iTerm shell integration
 test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
 
-# for editing daily notes
-alias today="pvi ~/tmp/brandonblogger/`date +'%m-%d'`.txt"
+# open editor for daily notes
+today() {
+  pvi -c "set tw=72" ~/tmp/brandonblogger/`date +'%m-%d'`.txt
+}
 
 # relax with a weather report
 arkansas() {
-    curl "https://forecast.weather.gov/product.php?site=LZK&issuedby=LZK&product=RWS&format=CI&version=1&glossary=0" 2>>/dev/null | selector pre | re '\n' ' ' | re '.*2018' | re '  ' '\n\n' | re '((.){62} )' '\1\n' | trim
+    curl "https://forecast.weather.gov/product.php?site=LZK&issuedby=LZK&product=RWS&format=CI&version=1&glossary=0" 2>>/dev/null | selector pre | re '\n' ' ' | re '.*2019' | re '  ' '\n\n' | re '((.){62} )' '\1\n' | trim
+}
+
+# enable fzf autocomplete
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+# add chrome alias for headless use
+alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
+
+# fshow - git commit browser
+# from https://github.com/junegunn/dotfiles/blob/master/bashrc
+fshow() {
+  git log --graph --color=always \
+      --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
+  fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
+      --header "Press CTRL-S to toggle sort" \
+      --preview "echo {} | grep -o '[a-f0-9]\{7\}' | head -1 |
+                 xargs -I % sh -c 'git show --color=always %'" \
+      --bind "enter:execute:echo {} | grep -o '[a-f0-9]\{7\}' | head -1 |
+              xargs -I % sh -c 'vim fugitive://\$(git rev-parse --show-toplevel)/.git//% < /dev/tty'"
 }
