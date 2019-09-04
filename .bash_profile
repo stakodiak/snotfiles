@@ -7,8 +7,6 @@ fi
 cd() { builtin cd "$@" && ls -lthrG; }
 
 set -o vi
-# keep the prompt clean
-export PS1="\W $ "
 
 # color terminal output
 export CLICOLOR=1
@@ -30,11 +28,13 @@ alias vi='vim -w ~/.vimlog '
 alias pvi='/usr/local/bin/vim -c "set viminfo="'
 
 # track bash history forever
-shopt -s histappend
-export PROMPT_COMMAND="history -a"
-export HISTFILESIZE=
-export HISTSIZE=
-export HISTTIMEFORMAT="[%F %T] "
+# TODO zsh history forever
+# shopt -s histappend
+# export PROMPT_COMMAND="history -a"
+# export PROMPT_COMMAND='if [ "$(id -u)" -ne 0 ]; then echo "#$(date "+%s") $(pwd) $(history 1)" >> ~/.bash-event-history; fi'
+# export HISTFILESIZE=
+# export HISTSIZE=
+# export HISTTIMEFORMAT="[%F %T] "
 
 # Change the file location because certain bash sessions truncate
 # .bash_history file upon close.
@@ -74,68 +74,8 @@ fd() {
   cd "$dir"
 }
 
-# Add directory marks.
-alias j="jump"
-alias m="mark"
-export MARKPATH=$HOME/.marks
-function jump {
-  cd -P "$MARKPATH/$1" 2>/dev/null || echo "No such mark: $1"
-}
-function mark {
-  mkdir -p "$MARKPATH"; ln -s "$(pwd)" "$MARKPATH/$1"
-}
-function unmark {
-  rm -i "$MARKPATH/$1"
-}
-function marks {
-    ls -l "$MARKPATH" | tail -n +2 | sed 's/  / /g' | cut -d' ' -f9- | awk -F ' -> ' '{printf "%-10s -> %s\n", $1, $2}'
-}
-_completemarks() {
-  local curw=${COMP_WORDS[COMP_CWORD]}
-  local wordlist=$(find $MARKPATH -type l -printf "%f\n")
-  COMPREPLY=($(compgen -W '${wordlist[@]}' -- "$curw"))
-  return 0
-}
-complete -F _completemarks jump unmark
-
-# Add tab complete for Invoke commands.
-_complete_invoke() {
-    local candidates
-
-    # COMP_WORDS contains the entire command string up til now (including
-    # program name).
-    # We hand it to Invoke so it can figure out the current context: spit back
-    # core options, task names, the current task's options, or some combo.
-    candidates=`invoke --complete -- ${COMP_WORDS[*]}`
-
-    # `compgen -W` takes list of valid options & a partial word & spits back
-    # possible matches. Necessary for any partial word completions (vs
-    # completions performed when no partial words are present).
-    #
-    # $2 is the current word or token being tabbed on, either empty string or a
-    # partial word, and thus wants to be compgen'd to arrive at some subset of
-    # our candidate list which actually matches.
-    #
-    # COMPREPLY is the list of valid completions handed back to `complete`.
-    COMPREPLY=( $(compgen -W "${candidates}" -- $2) )
-}
-
-
-# Tell shell builtin to use the above for completing 'inv'/'invoke':
-# * -F: use given function name to generate completions.
-# * -o default: when function generates no results, use filenames.
-# * positional args: program names to complete for.
-complete -F _complete_invoke -o default invoke inv
-
-# Use emacs bindings to jump to beginning or end of line.
-bind '\C-a:beginning-of-line'
-bind '\C-e:end-of-line'
-
-# print the date so you can orient yourself
-echo "`date`" "(`tty`)"
-
 # enable iTerm shell integration
-test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+#/ test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
 
 # open editor for daily notes
 today() {
@@ -146,9 +86,6 @@ today() {
 arkansas() {
     curl "https://forecast.weather.gov/product.php?site=LZK&issuedby=LZK&product=RWS&format=CI&version=1&glossary=0" 2>>/dev/null | selector pre | re '\n' ' ' | re '.*2019' | re '  ' '\n\n' | re '((.){62} )' '\1\n' | trim
 }
-
-# enable fzf autocomplete
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 # add chrome alias for headless use
 alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
@@ -165,3 +102,8 @@ fshow() {
       --bind "enter:execute:echo {} | grep -o '[a-f0-9]\{7\}' | head -1 |
               xargs -I % sh -c 'vim fugitive://\$(git rev-parse --show-toplevel)/.git//% < /dev/tty'"
 }
+
+# enable `z`
+. /usr/local/etc/profile.d/z.sh
+python="python3"
+alias python="python3"
