@@ -1,4 +1,5 @@
 set cm=blowfish
+set rtp+=/usr/local/opt/fzf
 set hidden
 set expandtab
 set tabstop=4
@@ -32,6 +33,7 @@ nmap <silent> <leader><leader> :update<cr><c-l>
 
 nnoremap <leader>b :bro ol<cr>
 
+
 set autoread
 
 " make a backup before overwriting a file
@@ -48,6 +50,8 @@ let g:ctrlp_working_path_mode = 'ra'
 
 set tags+=$HOME/src/tags
 set tags+=$HOME/newsela/tags
+set tags=./tags,tags;$HOME
+
 nmap <leader>T :!make tags<cr><cr>
 
 
@@ -78,3 +82,7 @@ function! s:JumpToLastKnownCursorPosition()
 endfunction
 
 autocmd vimrc BufReadPost * call s:JumpToLastKnownCursorPosition()
+
+nnoremap <leader>. :CtrlPTag<cr>
+nnoremap <leader>m :make<cr>
+

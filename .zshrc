@@ -195,3 +195,5 @@ source ~/.fzf.zsh
 # yes i pugs
 export PATH=/usr/local/pugs:$PATH
 
+mrs() { curl 2>>/dev/null https://mrs.computer/$* }
+ph() { curl 2>>/dev/null https://peahound.com/search?q=$* }
