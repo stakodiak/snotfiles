@@ -197,3 +197,5 @@ export PATH=/usr/local/pugs:$PATH
 
 mrs() { curl 2>>/dev/null https://mrs.computer/$* }
 ph() { curl 2>>/dev/null https://peahound.com/search?q=$* }
+
+alias airport='/System/Library/PrivateFrameworks/Apple80211.framework/Versions/A/Resources/airport'
