@@ -1,5 +1,5 @@
 # If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="/Users/alexander/.oh-my-zsh"
@@ -8,7 +8,7 @@ export ZSH="/Users/alexander/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="robbyrussell"
+#ZSH_THEME="robbyrussell"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -70,7 +70,7 @@ ZSH_THEME="robbyrussell"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git)
 
-source $ZSH/oh-my-zsh.sh
+# source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
@@ -124,7 +124,17 @@ alias pvi='/usr/local/bin/vim -c "set viminfo="'
 # Change the file location because certain bash sessions truncate
 # .bash_history file upon close.
 # http://superuser.com/questions/575479/bash-history-truncated-to-500-lines-on-each-login
-export HISTFILE=~/.bash_eternal_history
+HISTFILE=~/.zsh_history
+HISTSIZE=999999999
+SAVEHIST=$HISTSIZE
+setopt SHARE_HISTORY
+
+
+# bring back reverse search
+bindkey -e
+
+export LC_CTYPE=C 
+export LANG=C
 
 # Git shortcuts.
 alias gs="git status"
@@ -136,9 +146,6 @@ alias gg="git grep"
 alias ga="git add"
 alias gb='git checkout $(git branch | fzf)'
 
-
-# pugs utilities
-export PATH=/usr/local/pugs:$PATH
 
 # shortcut for finding files by prefix
 ff () {
@@ -162,12 +169,33 @@ fd() {
 
 # open editor for daily notes
 today() {
-  pvi -c "set tw=72" ~/tmp/brandonblogger/`date +'%m-%d'`.txt
+  /usr/bin/vim -c "set viminfo=|set tw=73 | set statusline+=%{wordcount().words}\ words | set laststatus=2" ~/notes/`date +'%m-%d'`.txt
 }
+
+# simplify a typical workflow for counting list items 
+count() {
+  sort | uniq -c | sort -n k1
+}
+
+# work for 25 minutes
+work() {
+  (
+
+   osascript -e 'display notification "Time to begin" with title "A bell will sound in five mintues." ';
+   sleep 1500; 
+   osascript -e 'display notification "Break has started" with title "A bell will sound in five minutes.." sound name "bell"';
+   sleep 300;
+   osascript -e 'display notification "Finished break" with title "Run `work`command again to continue." sound name "bell"';
+  )&! > /dev/null 2>&1 disown
+}
+
+# limit `man` output to 80 characters
+# (https://stackoverflow.com/questions/30173224/change-width-of-man-command-ouput)
+alias man='MANWIDTH=$((COLUMNS > 80 ? 80 : COLUMNS)) man'
 
 # relax with a weather report
 arkansas() {
-    curl "https://forecast.weather.gov/product.php?site=LZK&issuedby=LZK&product=RWS&format=CI&version=1&glossary=0" 2>>/dev/null | selector pre | re '\n' ' ' | re '.*2019' | re '  ' '\n\n' | re '((.){62} )' '\1\n' | trim
+  curl "https://forecast.weather.gov/product.php?site=LZK&issuedby=LZK&product=RWS&format=CI&version=1&glossary=0" 2>>/dev/null | selector pre | re '\n' ' ' | re '.*2019' | re '  ' '\n\n' | re '((.){62} )' '\1\n' | trim
 }
 
 # add chrome alias for headless use
@@ -186,10 +214,6 @@ fshow() {
               xargs -I % sh -c 'vim fugitive://\$(git rev-parse --show-toplevel)/.git//% < /dev/tty'"
 }
 
-source /usr/local/etc/profile.d/z.sh
-
-source ~/.fzf.zsh
-
 
 
 # yes i pugs
@@ -199,3 +223,6 @@ mrs() { curl 2>>/dev/null https://mrs.computer/$* }
 ph() { curl 2>>/dev/null https://peahound.com/search?q=$* }
 
 alias airport='/System/Library/PrivateFrameworks/Apple80211.framework/Versions/A/Resources/airport'
+
+source ~/.iterm2_shell_integration.zsh
+
