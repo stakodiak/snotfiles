@@ -36,8 +36,7 @@ nnoremap <leader>b :bro ol<cr>
 
 set autoread
 
-" make a backup before overwriting a file
-"set backup
+set backupdir=$HOME/.vim/backups
 
 " persist undo history across sessions
 set undofile
@@ -86,3 +85,7 @@ autocmd vimrc BufReadPost * call s:JumpToLastKnownCursorPosition()
 nnoremap <leader>. :CtrlPTag<cr>
 nnoremap <leader>m :make<cr>
 
+" Set encoding to avoid strange character issues (e.g. with em-dash)
+" from: https://stackoverflow.com/questions/16507777/set-encoding-and-fileencoding-to-utf-8-in-vim
+set encoding=utf-8
+set fileencoding=utf-8
