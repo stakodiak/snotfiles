@@ -1,78 +1,330 @@
 hs.loadSpoon('FadeLogo')
 
+HAMMER_CHORD = {"cmd", "alt", "ctrl"}
 
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Z", function()
+-- Add UNIX timer
+mb = hs.menubar.new()
+	:setTitle("Test")
+	:setMenu(function()
+		print("Menu bar updating...")
+		return {
+		   { title = "my menu item", fn = function() print("you clicked my menu item!") end },
+		   { title = "-" },
+		   { title = "other item", fn = some_function },
+		   { title = "disabled item", disabled = true },
+		   { title = "checked item", checked = true },
+	   }
+   end)
+
+tm = hs.timer.doEvery(1, function()
+	print("Updating Menubar")
+	mb:setTitle(os.time())
+end)
+
+hs.hotkey.bind(HAMMER_CHORD, "Z", function()
   spoon.FadeLogo:start()
 end)
 
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "0", function()
+hs.hotkey.bind(HAMMER_CHORD, "y" , hs.toggleConsole)
+
+hs.hotkey.bind(HAMMER_CHORD, "F", function()
+  -- size focused window to size of desktop
+  local win = hs.window.focusedWindow()
+  local f = win:frame()
+  local screen = win:screen()
+  local max = screen:frame()
+
+  f.x = max.x
+  f.y = max.y
+  f.w = max.w
+  f.h = max.h
+  win:setFrame(f)
+end)
+
+hs.hotkey.bind(HAMMER_CHORD, "T", function()
+  local time = os.date("%A, %d %B %Y, %H:%M")
+  hs.eventtap.keyStrokes(time)
+end)
+
+hs.hotkey.bind(HAMMER_CHORD, "0", "", function()
+  hs.notify.show("Hello World!", "Welcome to Hammerspoon", "")
   hs.reload()
 end)
 
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Y", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
-
-  f.x = f.x - 10
-  f.y = f.y - 10
-  win:setFrame(f)
+hs.hotkey.bind(HAMMER_CHORD, "S", function()
+  hs.keycodes.setLayout("Spanish - ISO")
 end)
 
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "K", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
-
-  f.y = f.y - 10
-  win:setFrame(f)
+hs.hotkey.bind(HAMMER_CHORD, "E", function()
+  hs.keycodes.setLayout("ABC")
 end)
 
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "U", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
+ hs.hotkey.bind(HAMMER_CHORD, "c", function()
+   hs.osascript.javascript([[
+function run(input, parameters) {
 
-  f.x = f.x + 10
-  f.y = f.y - 10
-  win:setFrame(f)
-end)
+  const appName = "";
+  const verbose = true;
 
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "H", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
+  const scriptName = "close_notifications_applescript";
 
-  f.x = f.x - 10
-  win:setFrame(f)
-end)
+  const CLEAR_ALL_ACTION = "Clear All";
+  const CLEAR_ALL_ACTION_TOP = "Clear";
+  const CLOSE_ACTION = "Close";
 
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "L", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
+  const notNull = (val) => {
+    return val !== null && val !== undefined;
+  }
 
-  f.x = f.x + 10
-  win:setFrame(f)
-end)
+  const isNull = (val) => {
+    return !notNull(val);
+  }
 
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "B", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
+  const isError = (maybeErr) => {
+    return notNull(maybeErr) && (maybeErr instanceof Error || maybeErr.message);
+  }
 
-  f.x = f.x - 10
-  f.y = f.y + 10
-  win:setFrame(f)
-end)
+  const systemVersion = () => {
+    return Application("Finder").version().split(".").map(val => parseInt(val));
+  }
 
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "J", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
+  const systemVersionGreaterThanOrEqualTo = (vers) => {
+    return systemVersion()[0] >= vers;
+  }
 
-  f.y = f.y + 10
-  win:setFrame(f)
-end)
+  const isBigSurOrGreater = () => {
+    return systemVersionGreaterThanOrEqualTo(11);
+  }
 
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "N", function()
-  local win = hs.window.focusedWindow()
-  local f = win:frame()
+  const V11_OR_GREATER = isBigSurOrGreater();
+  const APP_NAME_MATCHER_ROLE = V11_OR_GREATER ? "AXStaticText" : "AXImage";
+  const hasAppName = notNull(appName) && appName !== "";
+  const appNameForLog = hasAppName ? ` [${appName}]` : "";
 
-  f.x = f.x + 10
-  f.y = f.y + 10
-  win:setFrame(f)
-end)
+  const logs = [];
+  const log = (message, ...optionalParams) => {
+    let message_with_prefix = `${new Date().toISOString().replace("Z", "").replace("T", " ")} [${scriptName}]${appNameForLog} ${message}`;
+    console.log(message_with_prefix, optionalParams);
+    logs.push(message_with_prefix);
+  }
+
+  const logError = (message, ...optionalParams) => {
+    if (isError(message)) {
+      let err = message;
+      message = `${err}${err.stack ? (' ' + err.stack) : ''}`;
+    }
+    log(`ERROR ${message}`, optionalParams);
+  }
+
+  const logErrorVerbose = (message, ...optionalParams) => {
+    if (verbose) {
+      logError(message, optionalParams);
+    }
+  }
+
+  const logVerbose = (message) => {
+    if (verbose) {
+      log(message);
+    }
+  }
+
+  const getLogLines = () => {
+    return logs.join("\n");
+  }
+
+  const getSystemEvents = () => {
+    let systemEvents = Application("System Events");
+    systemEvents.includeStandardAdditions = true;
+    return systemEvents;
+  }
+
+  const getNotificationCenter = () => {
+    try {
+      return getSystemEvents().processes.byName("NotificationCenter");
+    } catch (err) {
+      logError("Could not get NotificationCenter");
+      throw err;
+    }
+  }
+
+  const getNotificationCenterGroups = (retryOnError = false) => {
+    try {
+      let notificationCenter = getNotificationCenter();
+      if (notificationCenter.windows.length <= 0) {
+        return [];
+      }
+      if (!V11_OR_GREATER) {
+        return notificationCenter.windows();
+      }
+      return notificationCenter.windows[0].uiElements[0].uiElements[0].uiElements();
+    } catch (err) {
+      logError("Could not get NotificationCenter groups");
+      if (retryOnError) {
+        logError(err);
+        return getNotificationCenterGroups(false);
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  const isClearButton = (description, name) => {
+    return description === "button" && name === CLEAR_ALL_ACTION_TOP;
+  }
+
+  const matchesAppName = (role, value) => {
+    return role === APP_NAME_MATCHER_ROLE && value.toLowerCase() === appName.toLowerCase();
+  }
+
+  const notificationGroupMatches = (group) => {
+    try {
+      let description = group.description();
+      if (V11_OR_GREATER && isClearButton(description, group.name())) {
+        return true;
+      }
+      if (V11_OR_GREATER && description !== "group") {
+        return false;
+      }
+      if (!V11_OR_GREATER) {
+        let matchedAppName = !hasAppName;
+        if (!matchedAppName) {
+          for (let elem of group.uiElements()) {
+            if (matchesAppName(elem.role(), elem.description())) {
+              matchedAppName = true;
+              break;
+            }
+          }
+        }
+        if (matchedAppName) {
+          return notNull(findCloseActionV10(group, -1));
+        }
+        return false;
+      }
+      if (!hasAppName) {
+        return true;
+      }
+      let firstElem = group.uiElements[0];
+      return matchesAppName(firstElem.role(), firstElem.value());
+    } catch (err) {
+      logErrorVerbose(`Caught error while checking window, window is probably closed: ${err}`);
+      logErrorVerbose(err);
+    }
+    return false;
+  }
+
+  const findCloseActionV10 = (group, closedCount) => {
+    try {
+      for (let elem of group.uiElements()) {
+        if (elem.role() === "AXButton" && elem.title() === CLOSE_ACTION) {
+          return elem.actions["AXPress"];
+        }
+      }
+    } catch (err) {
+      logErrorVerbose(`(group_${closedCount}) Caught error while searching for close action, window is probably closed: ${err}`);
+      logErrorVerbose(err);
+      return null;
+    }
+    log("No close action found for notification");
+    return null;
+  }
+
+  const findCloseAction = (group, closedCount) => {
+    try {
+      if (!V11_OR_GREATER) {
+        return findCloseActionV10(group, closedCount);
+      }
+      let checkForPress = isClearButton(group.description(), group.name());
+      let clearAllAction;
+      let closeAction;
+      for (let action of group.actions()) {
+        let description = action.description();
+        if (description === CLEAR_ALL_ACTION) {
+          clearAllAction = action;
+          break;
+        } else if (description === CLOSE_ACTION) {
+          closeAction = action;
+        } else if (checkForPress && description === "press") {
+          clearAllAction = action;
+          break;
+        }
+      }
+      if (notNull(clearAllAction)) {
+        return clearAllAction;
+      } else if (notNull(closeAction)) {
+        return closeAction;
+      }
+    } catch (err) {
+      logErrorVerbose(`(group_${closedCount}) Caught error while searching for close action, window is probably closed: ${err}`);
+      logErrorVerbose(err);
+      return null;
+    }
+    log("No close action found for notification");
+    return null;
+  }
+
+  const closeNextGroup = (groups, closedCount) => {
+    try {
+      for (let group of groups) {
+        if (notificationGroupMatches(group)) {
+          let closeAction = findCloseAction(group, closedCount);
+
+          if (notNull(closeAction)) {
+            try {
+              closeAction.perform();
+              return [true, 1];
+            } catch (err) {
+              logErrorVerbose(`(group_${closedCount}) Caught error while performing close action, window is probably closed: ${err}`);
+              logErrorVerbose(err);
+            }
+          }
+          return [true, 0];
+        }
+      }
+      return false;
+    } catch (err) {
+      logError("Could not run closeNextGroup");
+      throw err;
+    }
+  }
+
+  try {
+    let groupsCount = getNotificationCenterGroups(true).filter(group => notificationGroupMatches(group)).length;
+
+    if (groupsCount > 0) {
+      logVerbose(`Closing ${groupsCount}${appNameForLog} notification group${(groupsCount > 1 ? "s" : "")}`);
+
+      let startTime = new Date().getTime();
+      let closedCount = 0;
+      let maybeMore = true;
+      let maxAttempts = 2;
+      let attempts = 1;
+      while (maybeMore && ((new Date().getTime() - startTime) <= (1000 * 30))) {
+        try {
+          let closeResult = closeNextGroup(getNotificationCenterGroups(), closedCount);
+          maybeMore = closeResult[0];
+          if (maybeMore) {
+            closedCount = closedCount + closeResult[1];
+          }
+        } catch (innerErr) {
+          if (maybeMore && closedCount === 0 && attempts < maxAttempts) {
+            log(`Caught an error before anything closed, trying ${maxAttempts - attempts} more time(s).`)
+            attempts++;
+          } else {
+            throw innerErr;
+          }
+        }
+      }
+    } else {
+      throw Error(`No${appNameForLog} notifications found...`);
+    }
+  } catch (err) {
+    logError(err);
+    logError(err.message);
+    getLogLines();
+    throw err;
+  }
+
+  return getLogLines();
+}
+   ]])
+  end)
