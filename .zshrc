@@ -111,6 +111,7 @@ alias vi='vim -w ~/.vimlog '
 
 # for being sneaky
 alias pvi='/usr/local/bin/vim -c "set viminfo="'
+alias pm='/usr/local/bin/vim -c "set viminfo=" ~/.passwords'
 
 # track bash history forever
 # TODO zsh history forever
