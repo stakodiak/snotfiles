@@ -1,4 +1,4 @@
-hs.loadSpoon('FadeLogo'):start()
+hs.loadSpoon('FadeLogo')
 
 
 hs.hotkey.bind({"cmd", "alt", "ctrl"}, "Z", function()
