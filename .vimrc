@@ -121,3 +121,7 @@ nnoremap <C-H> <C-W>h
 nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
 nnoremap <C-L> <C-W>l
+
+" quickly change between indentation sizes
+nnoremap <leader>2 :set shiftwidth=2 tabstop=2 <cr>
+nnoremap <leader>4 :set shiftwidth=4 tabstop=4 <cr>
