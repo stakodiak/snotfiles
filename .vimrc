@@ -89,3 +89,10 @@ nnoremap <leader>m :make<cr>
 " from: https://stackoverflow.com/questions/16507777/set-encoding-and-fileencoding-to-utf-8-in-vim
 set encoding=utf-8
 set fileencoding=utf-8
+
+" Control + h/j/k/l will move around the windows
+" from: https://superuser.com/questions/280500/how-does-one-switch-between-windows-on-vim
+nnoremap <C-H> <C-W>h
+nnoremap <C-J> <C-W>j
+nnoremap <C-K> <C-W>k
+nnoremap <C-L> <C-W>l
