@@ -1,42 +1,61 @@
-set cm=blowfish
-set rtp+=/usr/local/opt/fzf
+" upgrade to avoid bug
+" see: https://vi.stackexchange.com/questions/364/how-secure-is-encrypting-files-with-blowfish
+set cryptmethod=blowfish2
+
+" use fzf for finding files
+set runtimepath+=/usr/local/opt/fzf
+
+" avoid 'No write since last change' error
 set hidden
+
+" convert tabs to spaces
 set expandtab
+
+" default indentation is four spaces
 set tabstop=4
-set nu
-set autoindent
 set shiftwidth=4
+
+" show line numbers
+set number
+
+" autoindent sucks
+set smartindent
+
+" show filename
 set showtabline=0
+
+" turn off highlighting when not searching
 set nohlsearch
+
+" color different parts of text
 syntax on
+
+" enable mouse control (e.g. scoll) in vim
+" note: hold opt to select text normally
 set mouse=a
+
+" show where typed pattern matches when searching
 set incsearch
+
+" share system with vim clipboard
 set clipboard=unnamedplus,unnamed,exclude:cons\|linux
 
-" shortcut for column width
+" shortcut for setting line length
 map \t :set tw=
 
 " set tab spacing for HTML
 map \h :set softtabstop=2<CR>:set shiftwidth=2<CR>
 
-" SCSS
-" Recognize dashes as valid identifier characters
+" make sure autocommands don't execute twice. does this work?
 augroup vimrc | execute 'autocmd!' | augroup END
+
+" add dashes as part of a valid keyword in css/sass
+" from @staticshock
 autocmd vimrc FileType scss setlocal iskeyword+=-
+autocmd vimrc FileType css setlocal iskeyword+=-
 
-" from @staticshock:
-" use <space> as <leader> instead of '\'
-let mapleader = ' '
-
-" save current buffer
-nmap <silent> <leader><leader> :update<cr><c-l>
-
-nnoremap <leader>b :bro ol<cr>
-
-
+" automatically reload file if vim detects a change
 set autoread
-
-set backupdir=$HOME/.vim/backups
 
 " persist undo history across sessions
 set undofile
@@ -46,13 +65,9 @@ set runtimepath^=~/.vim/bundle/ctrlp.vim
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc
 let g:ctrlp_working_path_mode = 'ra'
 
-
+" keep relevant source code in home dir
 set tags+=$HOME/src/tags
-set tags+=$HOME/newsela/tags
 set tags=./tags,tags;$HOME
-
-nmap <leader>T :!make tags<cr><cr>
-
 
 " from Thoughtbot - use Silver Searcher
 if executable('ag')
@@ -65,13 +80,8 @@ if executable('ag')
   " ag is fast enough that CtrlP doesn't need to cache
   let g:ctrlp_use_caching = 0
 endif
-" bind K to grep word under cursor
-nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
 
-" Jump to the last known cursor position when opening a file, unless the
-" position is invalid, or we're inside an event handler (happens when dropping
-" a file on gvim), or when jumping to the first line, or when opening
-" gitcommit or gitrebnmap <leader>T :!make tags<cr><cr>ase buffers.
+" jump to the last known cursor position when opening a file
 function! s:JumpToLastKnownCursorPosition()
   if line("'\"") <= 1 | return | endif
   if line("'\"") > line("$") | return | endif
@@ -79,18 +89,33 @@ function! s:JumpToLastKnownCursorPosition()
   if expand("%") =~# '\v(^|[\/])\.git[\/]' | return | endif
   execute "normal! g`\"" |
 endfunction
-
 autocmd vimrc BufReadPost * call s:JumpToLastKnownCursorPosition()
 
-nnoremap <leader>. :CtrlPTag<cr>
-nnoremap <leader>m :make<cr>
+" use <space> as <leader>
+let mapleader = ' '
 
-" Set encoding to avoid strange character issues (e.g. with em-dash)
+" save current file with <space> <space>
+nmap <silent> <leader><leader> :update<cr><c-l>
+
+" get list of open buffers
+nnoremap <leader>b :bro ol<cr>
+
+" remake tags for current file
+nmap <leader>T :!make tags<cr><cr>
+
+" shortcut for running Makefile commands
+nnoremap <leader>m :make
+
+" leader shortcuts are now for the quickfix
+nnoremap <leader>c :20copen<cr>
+nnoremap <leader>x :cclose<cr>
+nnoremap <leader>n :cnext<cr>
+
+" set encoding to avoid strange character issues (e.g. with em-dash)
 " from: https://stackoverflow.com/questions/16507777/set-encoding-and-fileencoding-to-utf-8-in-vim
-set encoding=utf-8
-set fileencoding=utf-8
+set encoding=utf-8 fileencoding=utf-8
 
-" Control + h/j/k/l will move around the windows
+" ctrl + h/j/k/l will move around the windows
 " from: https://superuser.com/questions/280500/how-does-one-switch-between-windows-on-vim
 nnoremap <C-H> <C-W>h
 nnoremap <C-J> <C-W>j
