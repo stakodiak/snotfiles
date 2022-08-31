@@ -243,4 +243,6 @@ ph() { curl 2>>/dev/null https://peahound.com/search?q=$* }
 alias airport='/System/Library/PrivateFrameworks/Apple80211.framework/Versions/A/Resources/airport'
 
 source ~/.iterm2_shell_integration.zsh
-
+export SLS_DEPRECATION_DISABLE=*
+export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+export PUPPETEER_EXECUTABLE_PATH=`which chromium`
