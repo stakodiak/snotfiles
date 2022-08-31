@@ -3,23 +3,23 @@
 set cryptmethod=blowfish2
 
 " use fzf for finding files
-set runtimepath+=/usr/local/opt/fzf
+set runtimepath+=/opt/homebrew/opt/fzf
 
 " avoid 'No write since last change' error
 set hidden
 
 " convert tabs to spaces
-set expandtab
 
 " default indentation is four spaces
 set tabstop=4
 set shiftwidth=4
+set expandtab
 
 " show line numbers
 set number
 
 " autoindent sucks
-set smartindent
+set nosmartindent
 
 " show filename
 set showtabline=0
