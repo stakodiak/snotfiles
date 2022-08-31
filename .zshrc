@@ -144,7 +144,7 @@ setopt SHARE_HISTORY
 # bring back reverse search
 bindkey -e
 
-export LC_CTYPE=C 
+export LC_CTYPE=C
 export LANG=C
 
 # Git shortcuts.
@@ -187,10 +187,10 @@ yesterday() {
   /usr/bin/vim -c "set viminfo=|set tw=73 | set statusline+=%{wordcount().words}\ words | set laststatus=2" ~/notes/`date -r $(date +%s - 86400) +'%m-%d'`.txt
 }
 
-# Homebrew has lost this privilege 
-HOMEBREW_NO_AUTO_UPDATE=1 
+# Homebrew has lost this privilege
+HOMEBREW_NO_AUTO_UPDATE=1
 
-# simplify a typical workflow for counting list items 
+# simplify a typical workflow for counting list items
 count() {
   sort | uniq -c | sort -n k1
 }
@@ -200,7 +200,7 @@ work() {
   (
 
    osascript -e 'display notification "Please work for 25 minutes." with title "Time to begin" ';
-   sleep 1500; 
+   sleep 1500;
    osascript -e 'display notification "Break has started" with title "A bell will sound in five minutes." sound name "bell"';
    sleep 300;
    osascript -e 'display notification "Finished break" with title "Run `work`command again to continue." sound name "bell"';
