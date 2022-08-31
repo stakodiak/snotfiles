@@ -1,3 +1,13 @@
+export PYENV_VERSION=3.7.0  # Set your preferred Python version.
+export PYENV_ROOT=~/.pyenv
+export PIPX_BIN_DIR=~/.local/bin
+export -U PATH path         # -U eliminates duplicates
+path=(
+    $PIPX_BIN_DIR
+    $PYENV_ROOT/{bin,shims}
+    /Users/mcalex/Library/Python/3.9/bin
+    $path
+)
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 
