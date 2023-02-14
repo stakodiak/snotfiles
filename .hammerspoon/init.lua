@@ -63,7 +63,8 @@ end)
    hs.osascript.javascript([[
 function run(input, parameters) {
 
-  const appName = "";
+  const appNames = [];
+  const skipAppNames = [];
   const verbose = true;
 
   const scriptName = "close_notifications_applescript";
@@ -74,69 +75,80 @@ function run(input, parameters) {
 
   const notNull = (val) => {
     return val !== null && val !== undefined;
-  }
+  };
 
   const isNull = (val) => {
     return !notNull(val);
-  }
+  };
+
+  const notNullOrEmpty = (val) => {
+    return notNull(val) && val.length > 0;
+  };
+
+  const isNullOrEmpty = (val) => {
+    return !notNullOrEmpty(val);
+  };
 
   const isError = (maybeErr) => {
     return notNull(maybeErr) && (maybeErr instanceof Error || maybeErr.message);
-  }
+  };
 
   const systemVersion = () => {
     return Application("Finder").version().split(".").map(val => parseInt(val));
-  }
+  };
 
   const systemVersionGreaterThanOrEqualTo = (vers) => {
     return systemVersion()[0] >= vers;
-  }
+  };
 
   const isBigSurOrGreater = () => {
     return systemVersionGreaterThanOrEqualTo(11);
-  }
+  };
 
   const V11_OR_GREATER = isBigSurOrGreater();
+  const V12 = systemVersion()[0] === 12;
   const APP_NAME_MATCHER_ROLE = V11_OR_GREATER ? "AXStaticText" : "AXImage";
-  const hasAppName = notNull(appName) && appName !== "";
-  const appNameForLog = hasAppName ? ` [${appName}]` : "";
+  const hasAppNames = notNullOrEmpty(appNames);
+  const hasSkipAppNames = notNullOrEmpty(skipAppNames);
+  const hasAppNameFilters = hasAppNames || hasSkipAppNames;
+  const appNameForLog = hasAppNames ? ` [${appNames.join(",")}]` : "";
 
   const logs = [];
   const log = (message, ...optionalParams) => {
     let message_with_prefix = `${new Date().toISOString().replace("Z", "").replace("T", " ")} [${scriptName}]${appNameForLog} ${message}`;
     console.log(message_with_prefix, optionalParams);
     logs.push(message_with_prefix);
-  }
+  };
 
   const logError = (message, ...optionalParams) => {
     if (isError(message)) {
       let err = message;
-      message = `${err}${err.stack ? (' ' + err.stack) : ''}`;
+      message = `${err}${err.stack ? (" " + err.stack) : ""}`;
     }
     log(`ERROR ${message}`, optionalParams);
-  }
+  };
 
   const logErrorVerbose = (message, ...optionalParams) => {
     if (verbose) {
       logError(message, optionalParams);
     }
-  }
+  };
 
   const logVerbose = (message) => {
     if (verbose) {
       log(message);
     }
-  }
+  };
 
   const getLogLines = () => {
     return logs.join("\n");
-  }
+  };
 
   const getSystemEvents = () => {
     let systemEvents = Application("System Events");
     systemEvents.includeStandardAdditions = true;
     return systemEvents;
-  }
+  };
 
   const getNotificationCenter = () => {
     try {
@@ -145,7 +157,7 @@ function run(input, parameters) {
       logError("Could not get NotificationCenter");
       throw err;
     }
-  }
+  };
 
   const getNotificationCenterGroups = (retryOnError = false) => {
     try {
@@ -156,25 +168,48 @@ function run(input, parameters) {
       if (!V11_OR_GREATER) {
         return notificationCenter.windows();
       }
-      return notificationCenter.windows[0].uiElements[0].uiElements[0].uiElements();
+      if (V12) {
+        return notificationCenter.windows[0].uiElements[0].uiElements[0].uiElements();
+      }
+      return notificationCenter.windows[0].uiElements[0].uiElements[0].uiElements[0].uiElements();
     } catch (err) {
       logError("Could not get NotificationCenter groups");
       if (retryOnError) {
         logError(err);
+        log("Retrying getNotificationCenterGroups...");
         return getNotificationCenterGroups(false);
       } else {
         throw err;
       }
     }
-  }
+  };
 
   const isClearButton = (description, name) => {
     return description === "button" && name === CLEAR_ALL_ACTION_TOP;
-  }
+  };
+
+  const matchesAnyAppNames = (value, checkValues) => {
+    if (isNullOrEmpty(checkValues)) {
+      return false;
+    }
+    let lowerAppName = value.toLowerCase();
+    for (let checkValue of checkValues) {
+      if (lowerAppName === checkValue.toLowerCase()) {
+        return true;
+      }
+    }
+    return false;
+  };
 
   const matchesAppName = (role, value) => {
-    return role === APP_NAME_MATCHER_ROLE && value.toLowerCase() === appName.toLowerCase();
-  }
+    if (role !== APP_NAME_MATCHER_ROLE) {
+      return false;
+    }
+    if (hasAppNames) {
+      return matchesAnyAppNames(value, appNames);
+    }
+    return !matchesAnyAppNames(value, skipAppNames);
+  };
 
   const notificationGroupMatches = (group) => {
     try {
@@ -186,7 +221,7 @@ function run(input, parameters) {
         return false;
       }
       if (!V11_OR_GREATER) {
-        let matchedAppName = !hasAppName;
+        let matchedAppName = !hasAppNameFilters;
         if (!matchedAppName) {
           for (let elem of group.uiElements()) {
             if (matchesAppName(elem.role(), elem.description())) {
@@ -200,7 +235,7 @@ function run(input, parameters) {
         }
         return false;
       }
-      if (!hasAppName) {
+      if (!hasAppNameFilters) {
         return true;
       }
       let firstElem = group.uiElements[0];
@@ -210,7 +245,7 @@ function run(input, parameters) {
       logErrorVerbose(err);
     }
     return false;
-  }
+  };
 
   const findCloseActionV10 = (group, closedCount) => {
     try {
@@ -226,7 +261,7 @@ function run(input, parameters) {
     }
     log("No close action found for notification");
     return null;
-  }
+  };
 
   const findCloseAction = (group, closedCount) => {
     try {
@@ -260,7 +295,7 @@ function run(input, parameters) {
     }
     log("No close action found for notification");
     return null;
-  }
+  };
 
   const closeNextGroup = (groups, closedCount) => {
     try {
@@ -285,7 +320,7 @@ function run(input, parameters) {
       logError("Could not run closeNextGroup");
       throw err;
     }
-  }
+  };
 
   try {
     let groupsCount = getNotificationCenterGroups(true).filter(group => notificationGroupMatches(group)).length;
