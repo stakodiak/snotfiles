@@ -1,11 +1,30 @@
 -- Spoons I have known and loved
 --
 
-HAMMER_CHORD = {"cmd", "alt", "ctrl"}
 
-hs.hotkey.bind(HAMMER_CHORD, "Z", function()
-  spoon.FadeLogo:start()
-end)
+-- Use fn key to enter modal
+k = hs.hotkey.modal.new("", 179)
+-- Use shift + esc to enter modal
+--k = hs.hotkey.modal.new("shift", 53)
+--function k:entered() hs.alert'Entered mode' end
+--function k:exited()  hs.alert'Exited mode'  end
+
+function command (fn)
+  return function (...)
+    k:exit()
+    hs.alert'exit pls'
+    return fn(...)
+  end
+end
+k:bind('', 'escape', function() k:exit() end)
+k:bind('', 'J', 'Pressed J',function() print'let the record show that J was pressed' end)
+k:bind('', 'r', command(flashRand))
+--hs.hotkey.bind(HAMMER_CHORD, "y" , hs.toggleConsole)
+function bind(key, fn)
+  --hs.hotkey.bind({"shift", "escape"}, key, fn)
+  k:bind('', key, command(fn))
+end
+
 
 hs.hotkey.bind(HAMMER_CHORD, "y" , hs.toggleConsole)
 
