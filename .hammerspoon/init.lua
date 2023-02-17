@@ -1,25 +1,7 @@
-hs.loadSpoon('FadeLogo')
+-- Spoons I have known and loved
+--
 
 HAMMER_CHORD = {"cmd", "alt", "ctrl"}
-
--- Add UNIX timer
-mb = hs.menubar.new()
-	:setTitle("Test")
-	:setMenu(function()
-		print("Menu bar updating...")
-		return {
-		   { title = "my menu item", fn = function() print("you clicked my menu item!") end },
-		   { title = "-" },
-		   { title = "other item", fn = some_function },
-		   { title = "disabled item", disabled = true },
-		   { title = "checked item", checked = true },
-	   }
-   end)
-
-tm = hs.timer.doEvery(1, function()
-	print("Updating Menubar")
-	mb:setTitle(os.time())
-end)
 
 hs.hotkey.bind(HAMMER_CHORD, "Z", function()
   spoon.FadeLogo:start()
