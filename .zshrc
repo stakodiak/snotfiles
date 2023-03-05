@@ -1,4 +1,6 @@
-export PYENV_VERSION=3.7.0  # Set your preferred Python version.
+export PYENV_VERSION=3.9.9  # Set your preferred Python version.
+eval "$(pyenv init --path)"
+eval "$(pyenv init - zsh)"
 export PYENV_ROOT=~/.pyenv
 export PIPX_BIN_DIR=~/.local/bin
 export -U PATH path         # -U eliminates duplicates
@@ -117,20 +119,18 @@ fi
 cd() { builtin cd "$@" && ls -lthrG; }
 
 set -o vi
-alias vi='vim -w ~/.vimlog '
+alias vi='nvim -w ~/.vimlog '
 
 # for being sneaky
 alias pvi='/usr/local/bin/vim -c "set viminfo="'
 alias pm='/usr/local/bin/vim -c "set viminfo=" ~/.passwords'
 
 # track bash history forever
-# TODO zsh history forever
-# shopt -s histappend
-# export PROMPT_COMMAND="history -a"
-# export PROMPT_COMMAND='if [ "$(id -u)" -ne 0 ]; then echo "#$(date "+%s") $(pwd) $(history 1)" >> ~/.bash-event-history; fi'
-# export HISTFILESIZE=
-# export HISTSIZE=
-# export HISTTIMEFORMAT="[%F %T] "
+export PROMPT_COMMAND="history -a"
+export PROMPT_COMMAND='if [ "$(id -u)" -ne 0 ]; then echo "#$(date "+%s") $(pwd) $(history 1)" >> ~/.bash-event-history; fi'
+export HISTFILESIZE=
+export HISTSIZE=
+export HISTTIMEFORMAT="[%F %T] "
 
 # Change the file location because certain bash sessions truncate
 # .bash_history file upon close.
@@ -145,8 +145,11 @@ setopt SHARE_HISTORY
 bindkey -e
 
 export LC_CTYPE=C
+export LC_ALL
 export LANG=C
 
+export LC_ALL=en_US.UTF-8   
+export LANG=en_US.UTF-8
 # Git shortcuts.
 alias gs="git status"
 alias gcp="git cherry-pick"
@@ -164,7 +167,7 @@ ff () {
 }
 
 # find repo file with fuzzy search, then edit it
-alias f='vi $(git ls-files | fzf)'
+alias f='nvim $(git ls-files | fzf)'
 
 # `fd` - cd to selected directory
 # from: https://github.com/junegunn/fzf/wiki/examples
@@ -181,10 +184,10 @@ fd() {
 # open editor for daily notes
 today() {
   date "+%H:%M" >> ~/notes/`date +'%m-%d'`.txt;
-  /usr/bin/vim -c "set viminfo=|set tw=73 | set statusline+=%{wordcount().words}\ words | set laststatus=2" + ~/notes/`date +'%m-%d'`.txt
+  /opt/homebrew/bin/nvim -c "set viminfo=|set tw=73 | set statusline+=%{wordcount().words}\ words | set laststatus=2" + ~/notes/`date +'%m-%d'`.txt
 }
 yesterday() {
-  /usr/bin/vim -c "set viminfo=|set tw=73 | set statusline+=%{wordcount().words}\ words | set laststatus=2" ~/notes/`date -r $(date +%s - 86400) +'%m-%d'`.txt
+  /opt/homebrew/bin/nvim -c "set viminfo=|set tw=73 | set statusline+=%{wordcount().words}\ words | set laststatus=2" ~/notes/`date -r $(date +%s - 86400) +'%m-%d'`.txt
 }
 
 # Homebrew has lost this privilege
@@ -246,3 +249,25 @@ source ~/.iterm2_shell_integration.zsh
 export SLS_DEPRECATION_DISABLE=*
 export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 export PUPPETEER_EXECUTABLE_PATH=`which chromium`
+alias vi=/opt/homebrew/bin/nvim
+
+export NVM_DIR="$HOME/.nvm"
+nvm-start() {
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+    echo "You may now use \`nvm\`"
+}
+
+[ -f "/Users/mcalex/.ghcup/env" ] && source "/Users/mcalex/.ghcup/env" # ghcup-env
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/mcalex/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/mcalex/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/mcalex/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/mcalex/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
+
+# use colored prompt
+export PROMPT='%F{#ffafd7}%1~%f $ '
+
+# ZLE completions are case insensitive
+zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|=*' 'l:|=* r:|=*'
+autoload -Uz compinit && compinit
